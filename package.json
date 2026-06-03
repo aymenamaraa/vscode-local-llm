@@ -1,0 +1,97 @@
+{
+  "name": "local-code",
+  "displayName": "LocalCode — AI Coding Agent",
+  "description": "Claude Code-like AI coding agent for local models (Ollama, LM Studio, OpenAI-compatible)",
+  "version": "0.1.0",
+  "publisher": "localcode",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["AI", "Programming Languages", "Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "localcode.openChat",       "title": "LocalCode: Open Chat",           "icon": "$(comment-discussion)" },
+      { "command": "localcode.explainCode",    "title": "LocalCode: Explain Selection",   "icon": "$(question)" },
+      { "command": "localcode.fixCode",        "title": "LocalCode: Fix / Improve",       "icon": "$(wrench)" },
+      { "command": "localcode.generateTests",  "title": "LocalCode: Generate Tests",      "icon": "$(beaker)" },
+      { "command": "localcode.generateDocs",   "title": "LocalCode: Generate Docs",       "icon": "$(book)" },
+      { "command": "localcode.pickModel",      "title": "LocalCode: Switch Model",        "icon": "$(server)" },
+      { "command": "localcode.clearHistory",   "title": "LocalCode: Clear History",       "icon": "$(clear-all)" }
+    ],
+    "keybindings": [
+      { "command": "localcode.openChat",      "key": "ctrl+shift+l", "mac": "cmd+shift+l" },
+      { "command": "localcode.explainCode",   "key": "ctrl+shift+e", "mac": "cmd+shift+e", "when": "editorHasSelection" },
+      { "command": "localcode.fixCode",       "key": "ctrl+shift+f", "mac": "cmd+shift+f", "when": "editorHasSelection" }
+    ],
+    "menus": {
+      "editor/context": [
+        { "command": "localcode.explainCode",   "when": "editorHasSelection", "group": "localcode@1" },
+        { "command": "localcode.fixCode",       "when": "editorHasSelection", "group": "localcode@2" },
+        { "command": "localcode.generateTests", "when": "editorHasSelection", "group": "localcode@3" },
+        { "command": "localcode.generateDocs",  "when": "editorHasSelection", "group": "localcode@4" }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "localcode-container", "title": "LocalCode", "icon": "resources/sidebar-icon.svg" }
+      ]
+    },
+    "views": {
+      "localcode-container": [
+        { "type": "webview", "id": "localcode.chatView", "name": "Chat" }
+      ]
+    },
+    "configuration": {
+      "title": "LocalCode",
+      "properties": {
+        "localcode.provider": {
+          "type": "string",
+          "enum": ["ollama", "lmstudio", "openai-compatible"],
+          "default": "ollama",
+          "description": "LLM provider backend"
+        },
+        "localcode.baseUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL for the LLM API"
+        },
+        "localcode.model": {
+          "type": "string",
+          "default": "codestral",
+          "description": "Model name to use"
+        },
+        "localcode.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key (for openai-compatible providers)"
+        },
+        "localcode.contextLines": {
+          "type": "number",
+          "default": 100,
+          "description": "Lines of context to include around selections"
+        },
+        "localcode.streamResponses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Stream LLM responses token by token"
+        },
+        "localcode.systemPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "Optional custom system prompt override"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "package": "npm run build && npx vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.19.0",
+    "typescript": "^5.3.0"
+  }
+}
